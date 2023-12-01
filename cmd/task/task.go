@@ -53,6 +53,7 @@ var flags struct {
 	listJson    bool
 	taskSort    string
 	status      bool
+	noStatus    bool
 	insecure    bool
 	force       bool
 	forceAll    bool
@@ -74,6 +75,7 @@ var flags struct {
 	experiments bool
 	download    bool
 	offline     bool
+	timeout     time.Duration
 }
 
 func main() {
@@ -115,6 +117,7 @@ func run() error {
 	pflag.BoolVarP(&flags.listJson, "json", "j", false, "Formats task list as JSON.")
 	pflag.StringVar(&flags.taskSort, "sort", "", "Changes the order of the tasks when listed. [default|alphanumeric|none].")
 	pflag.BoolVar(&flags.status, "status", false, "Exits with non-zero exit code if any of the given tasks is not up-to-date.")
+	pflag.BoolVar(&flags.noStatus, "no-status", false, "Ignore status when listing tasks as JSON")
 	pflag.BoolVar(&flags.insecure, "insecure", false, "Forces Task to download Taskfiles over insecure connections.")
 	pflag.BoolVarP(&flags.watch, "watch", "w", false, "Enables watch of the given task.")
 	pflag.BoolVarP(&flags.verbose, "verbose", "v", false, "Enables verbose mode.")
@@ -148,6 +151,7 @@ func run() error {
 	if experiments.RemoteTaskfiles {
 		pflag.BoolVar(&flags.download, "download", false, "Downloads a cached version of a remote Taskfile.")
 		pflag.BoolVar(&flags.offline, "offline", false, "Forces Task to only use local or cached Taskfiles.")
+		pflag.DurationVar(&flags.timeout, "timeout", time.Second*10, "Timeout for downloading remote Taskfiles.")
 	}
 
 	pflag.Parse()
@@ -233,6 +237,7 @@ func run() error {
 		Insecure:    flags.insecure,
 		Download:    flags.download,
 		Offline:     flags.offline,
+		Timeout:     flags.timeout,
 		Watch:       flags.watch,
 		Verbose:     flags.verbose,
 		Silent:      flags.silent,
@@ -254,7 +259,7 @@ func run() error {
 		TaskSorter:  taskSorter,
 	}
 
-	listOptions := task.NewListOptions(flags.list, flags.listAll, flags.listJson)
+	listOptions := task.NewListOptions(flags.list, flags.listAll, flags.listJson, flags.noStatus)
 	if err := listOptions.Validate(); err != nil {
 		return err
 	}
@@ -266,6 +271,12 @@ func run() error {
 
 	if err := e.Setup(); err != nil {
 		return err
+	}
+
+	// If the download flag is specified, we should stop execution as soon as
+	// taskfile is downloaded
+	if flags.download {
+		return nil
 	}
 
 	if listOptions.ShouldListTasks() {
@@ -296,9 +307,7 @@ func run() error {
 	}
 
 	// If there are no calls, run the default task instead
-	// Unless the download flag is specified, in which case we want to download
-	// the Taskfile and do nothing else
-	if len(calls) == 0 && !flags.download {
+	if len(calls) == 0 {
 		calls = append(calls, taskfile.Call{Task: "default", Direct: true})
 	}
 

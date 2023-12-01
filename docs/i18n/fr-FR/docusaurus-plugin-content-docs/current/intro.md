@@ -37,16 +37,6 @@ L'exemple ci-dessus n'est que le début, vous pouvez jeter un coup d'œil au [gu
 - Multi-plateforme : alors que la plupart des outils de compilation ne fonctionnent bien que sous Linux ou macOS, Task prend également en charge Windows grâce à [cet interpréteur shell pour Go][sh].
 - Idéal pour la génération de code : vous pouvez facilement [empêcher une tâche de s'exécuter](/usage#prevent-unnecessary-work) si un ensemble donné de fichiers n'ont pas changé depuis le dernier lancement (basé soit sur son horodatage soit son contenu).
 
-## Sponsors Or
-
-<div class="gold-sponsors">
-
-| [Appwrite](https://appwrite.io/?utm_source=taskfile.dev&utm_medium=website&utm_campaign=task_oss_fund)                       |
-| ---------------------------------------------------------------------------------------------------------------------------- |
-| [![Appwrite](/img/appwrite.svg)](https://appwrite.io/?utm_source=taskfile.dev&utm_medium=website&utm_campaign=task_oss_fund) |
-
-</div>
-
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->

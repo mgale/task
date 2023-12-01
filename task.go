@@ -46,6 +46,7 @@ type Executor struct {
 	Insecure    bool
 	Download    bool
 	Offline     bool
+	Timeout     time.Duration
 	Watch       bool
 	Verbose     bool
 	Silent      bool
@@ -160,7 +161,16 @@ func (e *Executor) splitRegularAndWatchCalls(calls ...taskfile.Call) (regularCal
 
 // RunTask runs a task by its name
 func (e *Executor) RunTask(ctx context.Context, call taskfile.Call) error {
-	t, err := e.CompiledTask(call)
+	t, err := e.FastCompiledTask(call)
+	if err != nil {
+		return err
+	}
+	if !shouldRunOnCurrentPlatform(t.Platforms) {
+		e.Logger.VerboseOutf(logger.Yellow, `task: %q not for current platform - ignored\n`, call.Task)
+		return nil
+	}
+
+	t, err = e.CompiledTask(call)
 	if err != nil {
 		return err
 	}
@@ -185,11 +195,6 @@ func (e *Executor) RunTask(ctx context.Context, call taskfile.Call) error {
 	}
 
 	return e.startExecution(ctx, t, func(ctx context.Context) error {
-		if !shouldRunOnCurrentPlatform(t.Platforms) {
-			e.Logger.VerboseOutf(logger.Yellow, `task: %q not for current platform - ignored\n`, call.Task)
-			return nil
-		}
-
 		e.Logger.VerboseErrf(logger.Magenta, "task: %q started\n", call.Task)
 		if err := e.runDeps(ctx, t); err != nil {
 			return err
