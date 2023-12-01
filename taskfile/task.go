@@ -77,34 +77,6 @@ func (t *Task) UnmarshalYAML(node *yaml.Node) error {
 	// Full task object
 	case yaml.MappingNode:
 		var task struct {
-			Cmds          []*Cmd
-			Cmd           *Cmd
-			Deps          []*Dep
-			Label         string
-			Desc          string
-			Prompt        string
-			Summary       string
-			Aliases       []string
-			Sources       []*Glob
-			Generates     []*Glob
-			Status        []string
-			Preconditions []*Precondition
-			Dir           string
-			Set           []string
-			Shopt         []string
-			Vars          *Vars
-			Env           *Vars
-			Dotenv        []string
-			Silent        bool
-			Interactive   bool
-			Internal      bool
-			Method        string
-			Prefix        string
-			IgnoreError   bool `yaml:"ignore_error"`
-			Run           string
-			Platforms     []*Platform
-			Requires      *Requires
-			Watch         bool
 			Cmds           []*Cmd
 			Cmd            *Cmd
 			Deps           []*Dep
@@ -113,8 +85,8 @@ func (t *Task) UnmarshalYAML(node *yaml.Node) error {
 			Prompt         string
 			Summary        string
 			Aliases        []string
-			Sources        []string
-			Generates      []string
+			Sources        []*Glob
+			Generates      []*Glob
 			Status         []string
 			Preconditions  []*Precondition
 			Dir            string
