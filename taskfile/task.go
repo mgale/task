@@ -43,6 +43,7 @@ type Task struct {
 	Platforms            []*Platform
 	Location             *Location
 	Watch                bool
+	ForceContainer       bool
 }
 
 func (t *Task) Name() string {
@@ -105,6 +106,7 @@ func (t *Task) UnmarshalYAML(node *yaml.Node) error {
 			Requires       *Requires
 			RequiresStrict *RequiresStrict `yaml:"requires_strict"`
 			Watch          bool
+			ForceContainer bool `yaml:"force_container"`
 		}
 		if err := node.Decode(&task); err != nil {
 			return err
@@ -144,6 +146,7 @@ func (t *Task) UnmarshalYAML(node *yaml.Node) error {
 		t.Requires = task.Requires
 		t.RequiresStrict = task.RequiresStrict
 		t.Watch = task.Watch
+		t.ForceContainer = task.ForceContainer
 		return nil
 	}
 
