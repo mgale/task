@@ -85,13 +85,8 @@ func (t *Task) UnmarshalYAML(node *yaml.Node) error {
 			Prompt         string
 			Summary        string
 			Aliases        []string
-<<<<<<< HEAD
 			Sources        []*Glob
 			Generates      []*Glob
-=======
-			Sources        []string
-			Generates      []string
->>>>>>> 53973c3f (Initial requires_strict setup)
 			Status         []string
 			Preconditions  []*Precondition
 			Dir            string
@@ -111,10 +106,7 @@ func (t *Task) UnmarshalYAML(node *yaml.Node) error {
 			Requires       *Requires
 			RequiresStrict *RequiresStrict `yaml:"requires_strict"`
 			Watch          bool
-<<<<<<< HEAD
 			ForceContainer bool `yaml:"force_container"`
-=======
->>>>>>> 53973c3f (Initial requires_strict setup)
 		}
 		if err := node.Decode(&task); err != nil {
 			return err
